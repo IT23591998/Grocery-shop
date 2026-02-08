@@ -42,9 +42,9 @@ export default function CartPage() {
                                         <span>{item.name}</span>
                                     </div>
                                 </td>
-                                <td className="px-6 py-4">${item.price.toFixed(2)}</td>
+                                <td className="px-6 py-4">Rs. {item.price.toFixed(2)}</td>
                                 <td className="px-6 py-4">{item.quantity}</td>
-                                <td className="px-6 py-4">${(item.price * item.quantity).toFixed(2)}</td>
+                                <td className="px-6 py-4">Rs. {(item.price * item.quantity).toFixed(2)}</td>
                                 <td className="px-6 py-4">
                                     <button
                                         onClick={() => removeFromCart(item.id)}
@@ -60,7 +60,7 @@ export default function CartPage() {
             </div>
 
             <div className="flex justify-between items-center bg-white p-6 rounded-lg shadow dark:bg-gray-800">
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">Total: ${cartTotal.toFixed(2)}</div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">Total: Rs. {cartTotal.toFixed(2)}</div>
                 <div className="space-x-4">
                     <button
                         onClick={clearCart}

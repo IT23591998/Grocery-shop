@@ -78,7 +78,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ id: s
                             <div className="px-5 pb-5 pt-4">
                                 <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white truncate">{product.name}</h5>
                                 <div className="flex items-center justify-between mt-4">
-                                    <span className="text-2xl font-bold text-gray-900 dark:text-white">${product.price}</span>
+                                    <span className="text-2xl font-bold text-gray-900 dark:text-white">Rs. {product.price}</span>
                                     {/* Add to cart will be handled by a client component wrapper or similar mechanism later */}
                                     <AddToCartButton product={product} />
                                 </div>

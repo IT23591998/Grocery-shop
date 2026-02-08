@@ -56,7 +56,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
                             <div className="px-5 pb-5 pt-4">
                                 <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white truncate">{product.name}</h5>
                                 <div className="flex items-center justify-between mt-4">
-                                    <span className="text-2xl font-bold text-gray-900 dark:text-white">${product.price}</span>
+                                    <span className="text-2xl font-bold text-gray-900 dark:text-white">Rs. {product.price}</span>
                                     <AddToCartButton product={product} />
                                 </div>
                             </div>

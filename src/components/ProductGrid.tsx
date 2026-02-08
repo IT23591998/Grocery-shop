@@ -64,7 +64,7 @@ export default async function ProductGrid() {
                                     <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white truncate">{product.name}</h5>
                                 </a>
                                 <div className="flex items-center justify-between mt-4">
-                                    <span className="text-2xl font-bold text-gray-900 dark:text-white">${product.price}</span>
+                                    <span className="text-2xl font-bold text-gray-900 dark:text-white">Rs. {product.price}</span>
                                     <AddToCartButton product={product} />
                                 </div>
                             </div>
