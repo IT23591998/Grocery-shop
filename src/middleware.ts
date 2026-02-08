@@ -1,34 +1,64 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
 
-export async function middleware(req: NextRequest) {
-    const res = NextResponse.next();
-    const supabase = createMiddlewareClient({ req, res });
+export async function middleware(request: NextRequest) {
+    let response = NextResponse.next({
+        request: {
+            headers: request.headers,
+        },
+    })
 
-    const {
-        data: { session },
-    } = await supabase.auth.getSession();
+    // Create a Supabase client configured to use cookies
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                getAll() {
+                    return request.cookies.getAll()
+                },
+                setAll(cookiesToSet) {
+                    cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+                    response = NextResponse.next({
+                        request: {
+                            headers: request.headers,
+                        },
+                    })
+                    cookiesToSet.forEach(({ name, value, options }) =>
+                        response.cookies.set(name, value, options)
+                    )
+                },
+            },
+        }
+    )
+
+    // Refresh session if expired - required for Server Components
+    const { data: { user } } = await supabase.auth.getUser()
 
     // Protect Admin Routes
-    if (req.nextUrl.pathname.startsWith('/admin')) {
-        // Check if user is authenticated
-        if (!session) {
-            // If not, redirect to login page
-            // Exception for the login page itself to avoid infinite loop
-            if (req.nextUrl.pathname !== ('/admin/login')) {
-                const redirectUrl = req.nextUrl.clone();
-                redirectUrl.pathname = '/admin/login';
-                return NextResponse.redirect(redirectUrl);
+    if (request.nextUrl.pathname.startsWith('/admin')) {
+        if (!user) {
+            // Allow access to login page
+            if (request.nextUrl.pathname !== '/admin/login') {
+                const url = request.nextUrl.clone()
+                url.pathname = '/admin/login'
+                return NextResponse.redirect(url)
             }
         }
-
-        // Optional: Check for 'admin' role if we had roles. For now, any authenticated user is admin.
     }
 
-    return res;
+    return response
 }
 
 export const config = {
-    matcher: ['/admin/:path*'],
-};
+    matcher: [
+        /*
+         * Match all request paths except for the ones starting with:
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         * Feel free to modify this pattern to include more paths.
+         */
+        '/admin/:path*',
+    ],
+}

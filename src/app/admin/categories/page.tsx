@@ -1,10 +1,11 @@
-import { supabase } from '@/libs/supabaseClient';
+import { createClient } from '@/libs/supabaseServer';
 import Link from 'next/link';
 import { Plus, Edit } from 'lucide-react';
 
 export const revalidate = 0; // Ensure fresh data
 
 async function getCategories() {
+    const supabase = await createClient();
     if (!supabase) return [];
 
     const { data, error } = await supabase

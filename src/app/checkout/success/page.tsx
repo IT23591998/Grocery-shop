@@ -1,10 +1,11 @@
 "use client";
 
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { CheckCircle } from 'lucide-react';
 
-export default function OrderSuccessPage() {
+function OrderSuccessContent() {
     const searchParams = useSearchParams();
     const orderId = searchParams.get('orderId');
 
@@ -22,10 +23,18 @@ export default function OrderSuccessPage() {
                 <Link href="/" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
                     Continue Shopping
                 </Link>
-                <Link href="/" className="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                    View Orders (Coming Soon)
+                <Link href="/admin/orders" className="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                    View Orders
                 </Link>
             </div>
         </div>
+    );
+}
+
+export default function OrderSuccessPage() {
+    return (
+        <Suspense fallback={<div className="pt-32 text-center">Loading...</div>}>
+            <OrderSuccessContent />
+        </Suspense>
     );
 }

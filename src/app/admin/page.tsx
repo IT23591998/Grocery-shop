@@ -1,10 +1,11 @@
-import { supabase } from '@/libs/supabaseClient';
+import { createClient } from '@/libs/supabaseServer';
 import { Package, Tags, ShoppingCart, TrendingUp } from 'lucide-react';
 import { PRODUCTS } from '@/data/products'; // Keep for fallback or recent updates
 
 export const revalidate = 0;
 
 async function getDashboardStats() {
+    const supabase = await createClient();
     if (!supabase) return {
         totalProducts: PRODUCTS.length,
         totalCategories: 5,
@@ -31,6 +32,7 @@ async function getDashboardStats() {
 }
 
 async function getRecentProducts() {
+    const supabase = await createClient();
     if (!supabase) return PRODUCTS.slice(0, 5);
     const { data } = await supabase.from('products').select('*').order('id', { ascending: false }).limit(5);
     return data || [];

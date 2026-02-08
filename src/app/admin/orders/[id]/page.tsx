@@ -1,4 +1,4 @@
-import { supabase } from '@/libs/supabaseClient';
+import { createClient } from '@/libs/supabaseServer';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import OrderStatusSelect from '@/components/admin/OrderStatusSelect'; // Client component for updating status
@@ -6,6 +6,7 @@ import OrderStatusSelect from '@/components/admin/OrderStatusSelect'; // Client 
 export const revalidate = 0;
 
 async function getOrder(id: string) {
+    const supabase = await createClient();
     if (!supabase) return null;
 
     // Fetch order

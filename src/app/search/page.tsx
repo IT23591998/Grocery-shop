@@ -1,4 +1,4 @@
-import { supabase } from '@/libs/supabaseClient';
+import { createClient } from '@/libs/supabaseServer';
 import { Product } from '@/types';
 import AddToCartButton from '@/components/AddToCartButton';
 
@@ -6,6 +6,8 @@ import { PRODUCTS } from '@/data/products';
 
 async function searchProducts(query: string) {
     if (!query) return [];
+
+    const supabase = await createClient();
 
     if (!supabase) {
         return PRODUCTS.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));

@@ -1,7 +1,8 @@
-import { supabase } from '@/libs/supabaseClient';
+import { createClient } from '@/libs/supabaseServer';
 import CategoryForm from '@/components/admin/CategoryForm';
 
 async function getCategory(id: string) {
+    const supabase = await createClient();
     if (!supabase) return null;
     const { data } = await supabase.from('categories').select('*').eq('id', id).single();
     return data;

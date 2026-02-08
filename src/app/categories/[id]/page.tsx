@@ -1,4 +1,4 @@
-import { supabase } from '@/libs/supabaseClient';
+import { createClient } from '@/libs/supabaseServer';
 import { Product, Category } from '@/types';
 import ProductGrid from '@/components/ProductGrid'; // We might need to refactor ProductGrid to accept props, or create a new component. For now I'll create a local display.
 import Link from 'next/link';
@@ -7,6 +7,7 @@ import AddToCartButton from '@/components/AddToCartButton';
 import { PRODUCTS } from '@/data/products';
 
 async function getCategoryProducts(categoryId: number) {
+    const supabase = await createClient();
     if (!supabase) {
         return PRODUCTS.filter(p => p.category_id === categoryId);
     }
@@ -32,6 +33,7 @@ async function getCategoryProducts(categoryId: number) {
 }
 
 async function getCategoryName(categoryId: number) {
+    const supabase = await createClient();
     // Simple lookup for demo purposes or DB fetch
     if (!supabase) {
         const cats = [

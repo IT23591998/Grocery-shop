@@ -1,4 +1,4 @@
-import { supabase } from '@/libs/supabaseClient';
+import { createClient } from '@/libs/supabaseServer';
 import { Product } from '@/types';
 import Link from 'next/link';
 import { Plus, Edit, Trash2 } from 'lucide-react';
@@ -6,6 +6,7 @@ import { Plus, Edit, Trash2 } from 'lucide-react';
 export const revalidate = 0; // Ensure fresh data on every request
 
 async function getProducts() {
+    const supabase = await createClient();
     if (!supabase) return [];
 
     const { data, error } = await supabase

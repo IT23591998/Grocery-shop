@@ -1,4 +1,4 @@
-import { supabase } from '@/libs/supabaseClient';
+import { createClient } from '@/libs/supabaseServer';
 import Image from 'next/image';
 import AddToCartButton from './AddToCartButton';
 
@@ -7,7 +7,8 @@ import { Product } from '@/types';
 import { PRODUCTS } from '@/data/products';
 
 async function getProducts() {
-    // Return demo data immediately since we are in demo mode
+    const supabase = await createClient();
+    // Return demo data immediately since we are in demo mode or if client setup failed
     if (!supabase) {
         console.log("Demo Mode: Serving static data");
         return PRODUCTS;

@@ -1,7 +1,8 @@
-import { supabase } from '@/libs/supabaseClient';
+import { createClient } from '@/libs/supabaseServer';
 import ProductForm from '@/components/admin/ProductForm';
 
 async function getProduct(id: string) {
+    const supabase = await createClient();
     if (!supabase) return null;
     const { data } = await supabase.from('products').select('*').eq('id', id).single();
     return data;
