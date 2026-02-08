@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/libs/supabaseClient';
 import { useRouter } from 'next/navigation';
 
 export default function ProductForm({ product }: { product?: any }) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [categories, setCategories] = useState<any[]>([]);
     const [formData, setFormData] = useState({
         name: product?.name || '',
         description: product?.description || '',
@@ -16,6 +17,16 @@ export default function ProductForm({ product }: { product?: any }) {
         in_stock: product?.in_stock ?? true,
         is_featured: product?.is_featured ?? false
     });
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            if (supabase) {
+                const { data } = await supabase.from('categories').select('*').order('name');
+                if (data) setCategories(data);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
@@ -71,9 +82,13 @@ export default function ProductForm({ product }: { product?: any }) {
                 </div>
 
                 <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category ID</label>
-                    <input type="number" name="category_id" value={formData.category_id} onChange={handleChange} required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" />
-                    {/* Ideally this would be a select dropdown fetching categories */}
+                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
+                    <select name="category_id" value={formData.category_id} onChange={handleChange} required className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+                        <option value="">Select a Category</option>
+                        {categories.map(cat => (
+                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                        ))}
+                    </select>
                 </div>
 
                 <div>

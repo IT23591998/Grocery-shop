@@ -1,12 +1,44 @@
-import { PRODUCTS } from '@/data/products';
+import { supabase } from '@/libs/supabaseClient';
 import { Package, Tags, ShoppingCart, TrendingUp } from 'lucide-react';
+import { PRODUCTS } from '@/data/products'; // Keep for fallback or recent updates
 
-export default function AdminDashboard() {
-    // In a real app, we would fetch these counts from the database
-    const totalProducts = PRODUCTS.length;
-    const totalCategories = 5; // Hardcoded from demo categories for now
-    const totalOrders = 12; // Dummy data
-    const totalRevenue = 4500; // Dummy data
+export const revalidate = 0;
+
+async function getDashboardStats() {
+    if (!supabase) return {
+        totalProducts: PRODUCTS.length,
+        totalCategories: 5,
+        totalOrders: 0,
+        totalRevenue: 0
+    };
+
+    try {
+        const { count: productsCount } = await supabase.from('products').select('*', { count: 'exact', head: true });
+        const { count: categoriesCount } = await supabase.from('categories').select('*', { count: 'exact', head: true });
+
+        // Orders/Revenue would be fetched here if tables existed
+
+        return {
+            totalProducts: productsCount || 0,
+            totalCategories: categoriesCount || 0,
+            totalOrders: 0, // Placeholder
+            totalRevenue: 0 // Placeholder
+        };
+    } catch (e) {
+        console.error("Error fetching stats:", e);
+        return { totalProducts: 0, totalCategories: 0, totalOrders: 0, totalRevenue: 0 };
+    }
+}
+
+async function getRecentProducts() {
+    if (!supabase) return PRODUCTS.slice(0, 5);
+    const { data } = await supabase.from('products').select('*').order('id', { ascending: false }).limit(5);
+    return data || [];
+}
+
+export default async function AdminDashboard() {
+    const { totalProducts, totalCategories, totalOrders, totalRevenue } = await getDashboardStats();
+    const recentProducts = await getRecentProducts();
 
     const stats = [
         { name: 'Total Products', value: totalProducts, icon: Package, color: 'text-blue-600', bg: 'bg-blue-100' },
@@ -35,12 +67,11 @@ export default function AdminDashboard() {
                 ))}
             </div>
 
-            {/* Recent Activity / Quick Actions Placeholder */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                     <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Recent Products</h2>
                     <ul className="space-y-4">
-                        {PRODUCTS.slice(0, 5).map(product => (
+                        {recentProducts.map((product: any) => (
                             <li key={product.id} className="flex items-center space-x-4">
                                 <div className="flex-shrink-0">
                                     {product.image_url ? (
@@ -59,18 +90,19 @@ export default function AdminDashboard() {
                                 </div>
                             </li>
                         ))}
+                        {recentProducts.length === 0 && <p className="text-gray-500 text-sm">No products found.</p>}
                     </ul>
                 </div>
 
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                     <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
                     <div className="grid gap-4">
-                        <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 text-gray-700 font-medium transition-colors">
+                        <a href="/admin/products/new" className="block w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 text-gray-700 font-medium transition-colors">
                             + Add New Product
-                        </button>
-                        <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 text-gray-700 font-medium transition-colors">
+                        </a>
+                        <a href="/admin/categories/new" className="block w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 text-gray-700 font-medium transition-colors">
                             + Add New Category
-                        </button>
+                        </a>
                         <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200 text-gray-700 font-medium transition-colors">
                             Manage Orders
                         </button>
