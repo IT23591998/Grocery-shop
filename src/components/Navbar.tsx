@@ -6,7 +6,7 @@ export default function Navbar() {
         <nav className="fixed w-full z-50 top-0 start-0 border-b border-white/10 bg-black/30 backdrop-blur-md">
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
                 <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
-                    <span className="self-center text-2xl font-semibold whitespace-nowrap text-white">Kevin's Shop</span>
+                    <img src="/logo.jpeg" className="h-8" alt="Kevin's Shop Logo" />
                 </Link>
                 <div className="flex md:order-2 space-x-3 md:space-x-4 rtl:space-x-reverse items-center">
                     <button type="button" className="text-white hover:bg-white/10 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center">
