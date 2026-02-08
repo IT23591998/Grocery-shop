@@ -8,10 +8,17 @@ export async function middleware(request: NextRequest) {
         },
     })
 
-    // Create a Supabase client configured to use cookies
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+    if (!supabaseUrl || !supabaseKey) {
+        console.error('Middleware: Missing Supabase environment variables');
+        return response;
+    }
+
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        supabaseUrl,
+        supabaseKey,
         {
             cookies: {
                 getAll() {
@@ -32,19 +39,26 @@ export async function middleware(request: NextRequest) {
         }
     )
 
-    // Refresh session if expired - required for Server Components
-    const { data: { user } } = await supabase.auth.getUser()
+    try {
+        // Refresh session if expired - required for Server Components
+        const { data: { user } } = await supabase.auth.getUser()
 
-    // Protect Admin Routes
-    if (request.nextUrl.pathname.startsWith('/admin')) {
-        if (!user) {
-            // Allow access to login page
-            if (request.nextUrl.pathname !== '/admin/login') {
-                const url = request.nextUrl.clone()
-                url.pathname = '/admin/login'
-                return NextResponse.redirect(url)
+        // Protect Admin Routes
+        if (request.nextUrl.pathname.startsWith('/admin')) {
+            if (!user) {
+                // Allow access to login page
+                if (request.nextUrl.pathname !== '/admin/login') {
+                    const url = request.nextUrl.clone()
+                    url.pathname = '/admin/login'
+                    return NextResponse.redirect(url)
+                }
             }
         }
+    } catch (e) {
+        console.error('Middleware: Auth error', e);
+        // On error, let the request proceed or handle gracefully. 
+        // For admin routes, maybe fail safe to login?
+        // For now, return response to avoid 500 users.
     }
 
     return response
