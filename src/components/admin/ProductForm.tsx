@@ -35,6 +35,43 @@ export default function ProductForm({ product }: { product?: any }) {
         setFormData(prev => ({ ...prev, [name]: val }));
     };
 
+    const [uploading, setUploading] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setSelectedFile(e.target.files[0]);
+        }
+    };
+
+    const uploadImage = async () => {
+        if (!selectedFile) return null;
+
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+
+        try {
+            setUploading(true);
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+            const data = await res.json();
+            setUploading(false);
+
+            if (data.success) {
+                return data.url;
+            } else {
+                throw new Error(data.message || 'Upload failed');
+            }
+        } catch (error) {
+            setUploading(false);
+            console.error(error);
+            alert('Image upload failed');
+            return null;
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -46,18 +83,32 @@ export default function ProductForm({ product }: { product?: any }) {
         }
 
         try {
+            let imageUrl = formData.image_url;
+
+            if (selectedFile) {
+                const uploadedUrl = await uploadImage();
+                if (uploadedUrl) {
+                    imageUrl = uploadedUrl;
+                } else {
+                    setLoading(false);
+                    return; // Stop if upload failed
+                }
+            }
+
+            const productData = { ...formData, image_url: imageUrl };
+
             if (product) {
                 // Update
                 const { error } = await supabase
                     .from('products')
-                    .update(formData)
+                    .update(productData)
                     .eq('id', product.id);
                 if (error) throw error;
             } else {
                 // Create
                 const { error } = await supabase
                     .from('products')
-                    .insert([formData]);
+                    .insert([productData]);
                 if (error) throw error;
             }
             router.push('/admin/products');
@@ -92,8 +143,12 @@ export default function ProductForm({ product }: { product?: any }) {
                 </div>
 
                 <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Image URL</label>
-                    <input type="text" name="image_url" value={formData.image_url} onChange={handleChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="https://..." />
+                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Image</label>
+                    <div className="space-y-2">
+                        <input type="file" accept="image/*" onChange={handleFileChange} className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" />
+                        <p className="text-xs text-gray-500">Or use URL:</p>
+                        <input type="text" name="image_url" value={formData.image_url} onChange={handleChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="https://..." />
+                    </div>
                 </div>
             </div>
 
@@ -113,8 +168,8 @@ export default function ProductForm({ product }: { product?: any }) {
                 </div>
             </div>
 
-            <button type="submit" disabled={loading} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:opacity-50">
-                {loading ? 'Saving...' : 'Save Product'}
+            <button type="submit" disabled={loading || uploading} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:opacity-50">
+                {uploading ? 'Uploading Image...' : (loading ? 'Saving...' : 'Save Product')}
             </button>
         </form>
     );
