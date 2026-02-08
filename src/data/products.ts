@@ -53,7 +53,7 @@ export const PRODUCTS: Product[] = [
         id: 7,
         name: "Pepsi 2 l",
         price: 500,
-        image_url: "https://images.unsplash.com/photo-1629203850473-a833829d1f97?auto=format&fit=crop&q=80&w=800", // Soda placeholder
+        image_url: "/pepsi-2l.jpeg", // Local image
         category_id: 4, // Beverages
         description: "2 Liter Pepsi bottle."
     },
