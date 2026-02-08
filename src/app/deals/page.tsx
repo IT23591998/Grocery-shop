@@ -2,15 +2,13 @@ import { supabase } from '@/libs/supabaseClient';
 import { Product } from '@/types';
 import AddToCartButton from '@/components/AddToCartButton';
 
-// Demo data - reusing
-const DEMO_PRODUCTS: Product[] = [
-    { id: 1, name: "Fresh Apples", price: 2.99, image_url: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&q=80&w=800", category_id: 1, is_featured: true },
-    { id: 2, name: "Organic Bananas", price: 1.49, image_url: "https://images.unsplash.com/photo-1603833665858-e61d17a86271?auto=format&fit=crop&q=80&w=800", category_id: 1, is_featured: true },
-    { id: 3, name: "Whole Milk", price: 3.50, image_url: "https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&q=80&w=800", category_id: 2 },
-];
+import { PRODUCTS, FEATURED_PRODUCTS_IDS } from '@/data/products';
 
 async function getFeaturedProducts() {
-    if (!supabase) return DEMO_PRODUCTS.filter(p => p.is_featured);
+    // If no DB or demo mode, return filtered list from centralized data
+    const demoFeatured = PRODUCTS.filter(p => FEATURED_PRODUCTS_IDS.includes(p.id));
+
+    if (!supabase) return demoFeatured;
 
     try {
         const { data, error } = await supabase
@@ -19,13 +17,13 @@ async function getFeaturedProducts() {
             .eq('is_featured', true);
 
         if (error || !data || data.length === 0) {
-            return DEMO_PRODUCTS.filter(p => p.is_featured);
+            return demoFeatured;
         }
 
         return data as Product[];
     } catch (e) {
         console.error("Error fetching deals:", e);
-        return DEMO_PRODUCTS.filter(p => p.is_featured);
+        return demoFeatured;
     }
 }
 

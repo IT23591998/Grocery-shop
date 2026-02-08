@@ -2,17 +2,13 @@ import { supabase } from '@/libs/supabaseClient';
 import { Product } from '@/types';
 import AddToCartButton from '@/components/AddToCartButton';
 
-// Demo data
-const DEMO_PRODUCTS: Product[] = [
-    { id: 1, name: "Fresh Apples", price: 2.99, image_url: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&q=80&w=800", category_id: 1 },
-    { id: 2, name: "Organic Bananas", price: 1.49, image_url: "https://images.unsplash.com/photo-1603833665858-e61d17a86271?auto=format&fit=crop&q=80&w=800", category_id: 1 },
-];
+import { PRODUCTS } from '@/data/products';
 
 async function searchProducts(query: string) {
     if (!query) return [];
 
     if (!supabase) {
-        return DEMO_PRODUCTS.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
+        return PRODUCTS.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
     }
 
     try {
@@ -24,8 +20,8 @@ async function searchProducts(query: string) {
         if (error) throw error;
 
         // Fallback for demo
-        if (data.length === 0 && query.toLowerCase().includes('apple')) {
-            return DEMO_PRODUCTS.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
+        if (data.length === 0) {
+            return PRODUCTS.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
         }
 
         return data as Product[];

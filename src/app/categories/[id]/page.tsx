@@ -4,18 +4,11 @@ import ProductGrid from '@/components/ProductGrid'; // We might need to refactor
 import Link from 'next/link';
 import AddToCartButton from '@/components/AddToCartButton';
 
-// Demo data - duplicating relevant parts from ProductGrid for now, should ideally be shared
-const DEMO_PRODUCTS: Product[] = [
-    { id: 1, name: "Fresh Apples", price: 2.99, image_url: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&q=80&w=800", category_id: 1 },
-    { id: 2, name: "Organic Bananas", price: 1.49, image_url: "https://images.unsplash.com/photo-1603833665858-e61d17a86271?auto=format&fit=crop&q=80&w=800", category_id: 1 },
-    { id: 3, name: "Whole Milk", price: 3.50, image_url: "https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&q=80&w=800", category_id: 2 },
-    { id: 4, name: "Sourdough Bread", price: 4.99, image_url: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=800", category_id: 3 },
-    { id: 5, name: "Eggs (Dozen)", price: 5.25, image_url: "https://images.unsplash.com/photo-1506976785307-8d3d2a1aac6e?auto=format&fit=crop&q=80&w=800", category_id: 2 },
-];
+import { PRODUCTS } from '@/data/products';
 
 async function getCategoryProducts(categoryId: number) {
     if (!supabase) {
-        return DEMO_PRODUCTS.filter(p => p.category_id === categoryId);
+        return PRODUCTS.filter(p => p.category_id === categoryId);
     }
 
     try {
@@ -26,15 +19,15 @@ async function getCategoryProducts(categoryId: number) {
 
         if (error) throw error;
 
-        // If DB returns nothing, check if we should show demo data for that category ID (for testing purposes)
+        // If DB returns nothing, check if we should show demo data
         if (data.length === 0) {
-            return DEMO_PRODUCTS.filter(p => p.category_id === categoryId);
+            return PRODUCTS.filter(p => p.category_id === categoryId);
         }
 
         return data as Product[];
     } catch (e) {
         console.error("Error fetching products:", e);
-        return DEMO_PRODUCTS.filter(p => p.category_id === categoryId);
+        return PRODUCTS.filter(p => p.category_id === categoryId);
     }
 }
 

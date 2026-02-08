@@ -4,19 +4,13 @@ import AddToCartButton from './AddToCartButton';
 
 import { Product } from '@/types';
 
-const DEMO_PRODUCTS: Product[] = [
-    { id: 1, name: "Fresh Apples", price: 2.99, image_url: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&q=80&w=800", category_id: 1 },
-    { id: 2, name: "Organic Bananas", price: 1.49, image_url: "https://images.unsplash.com/photo-1603833665858-e61d17a86271?auto=format&fit=crop&q=80&w=800", category_id: 1 },
-    { id: 3, name: "Whole Milk", price: 3.50, image_url: "https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&q=80&w=800", category_id: 2 },
-    { id: 4, name: "Sourdough Bread", price: 4.99, image_url: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=800", category_id: 3 },
-    { id: 5, name: "Eggs (Dozen)", price: 5.25, image_url: "https://images.unsplash.com/photo-1506976785307-8d3d2a1aac6e?auto=format&fit=crop&q=80&w=800", category_id: 2 },
-];
+import { PRODUCTS } from '@/data/products';
 
 async function getProducts() {
     // Return demo data immediately since we are in demo mode
     if (!supabase) {
         console.log("Demo Mode: Serving static data");
-        return DEMO_PRODUCTS;
+        return PRODUCTS;
     }
 
     try {
@@ -27,12 +21,12 @@ async function getProducts() {
 
         if (error) {
             console.error("Error fetching products:", error);
-            return DEMO_PRODUCTS; // Fallback to demo data on error
+            return PRODUCTS; // Fallback to demo data on error
         }
         return data as Product[];
     } catch (e) {
         console.error("Unexpected error:", e);
-        return DEMO_PRODUCTS;
+        return PRODUCTS;
     }
 }
 
