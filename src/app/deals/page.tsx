@@ -1,4 +1,4 @@
-import { supabase } from '@/libs/supabaseClient';
+import { createClient } from '@/libs/supabaseServer';
 import { Product } from '@/types';
 import AddToCartButton from '@/components/AddToCartButton';
 
@@ -7,6 +7,8 @@ import { PRODUCTS, FEATURED_PRODUCTS_IDS } from '@/data/products';
 async function getFeaturedProducts() {
     // If no DB or demo mode, return filtered list from centralized data
     const demoFeatured = PRODUCTS.filter(p => FEATURED_PRODUCTS_IDS.includes(p.id));
+
+    const supabase = await createClient();
 
     if (!supabase) return demoFeatured;
 
