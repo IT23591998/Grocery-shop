@@ -1,14 +1,8 @@
 import { supabase } from '@/libs/supabaseClient';
 import Image from 'next/image';
+import AddToCartButton from './AddToCartButton';
 
-// We'd ideally move this to a types file
-interface Product {
-    id: number;
-    name: string;
-    price: number;
-    image_url: string | null;
-    category_id: number;
-}
+import { Product } from '@/types';
 
 const DEMO_PRODUCTS: Product[] = [
     { id: 1, name: "Fresh Apples", price: 2.99, image_url: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&q=80&w=800", category_id: 1 },
@@ -77,7 +71,7 @@ export default async function ProductGrid() {
                                 </a>
                                 <div className="flex items-center justify-between mt-4">
                                     <span className="text-2xl font-bold text-gray-900 dark:text-white">${product.price}</span>
-                                    <a href="#" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add to cart</a>
+                                    <AddToCartButton product={product} />
                                 </div>
                             </div>
                         </div>
