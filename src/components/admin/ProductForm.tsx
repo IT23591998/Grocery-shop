@@ -95,7 +95,11 @@ export default function ProductForm({ product }: { product?: any }) {
                 }
             }
 
-            const productData = { ...formData, image_url: imageUrl };
+            const productData = {
+                ...formData,
+                price: parseFloat(formData.price.toString()),
+                image_url: imageUrl
+            };
 
             if (product) {
                 // Update

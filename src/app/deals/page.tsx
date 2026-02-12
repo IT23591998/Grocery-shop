@@ -2,15 +2,10 @@ import { createClient } from '@/libs/supabaseServer';
 import { Product } from '@/types';
 import AddToCartButton from '@/components/AddToCartButton';
 
-import { PRODUCTS, FEATURED_PRODUCTS_IDS } from '@/data/products';
-
 async function getFeaturedProducts() {
-    // If no DB or demo mode, return filtered list from centralized data
-    const demoFeatured = PRODUCTS.filter(p => FEATURED_PRODUCTS_IDS.includes(p.id));
-
     const supabase = await createClient();
 
-    if (!supabase) return demoFeatured;
+    if (!supabase) return [];
 
     try {
         const { data, error } = await supabase
@@ -19,13 +14,13 @@ async function getFeaturedProducts() {
             .eq('is_featured', true);
 
         if (error || !data || data.length === 0) {
-            return demoFeatured;
+            return [];
         }
 
         return data as Product[];
     } catch (e) {
         console.error("Error fetching deals:", e);
-        return demoFeatured;
+        return [];
     }
 }
 

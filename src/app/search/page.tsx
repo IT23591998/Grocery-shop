@@ -2,15 +2,13 @@ import { createClient } from '@/libs/supabaseServer';
 import { Product } from '@/types';
 import AddToCartButton from '@/components/AddToCartButton';
 
-import { PRODUCTS } from '@/data/products';
-
 async function searchProducts(query: string) {
     if (!query) return [];
 
     const supabase = await createClient();
 
     if (!supabase) {
-        return PRODUCTS.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
+        return [];
     }
 
     try {
@@ -20,11 +18,6 @@ async function searchProducts(query: string) {
             .ilike('name', `%${query}%`); // Simple case-insensitive search
 
         if (error) throw error;
-
-        // Fallback for demo
-        if (data.length === 0) {
-            return PRODUCTS.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
-        }
 
         return data as Product[];
     } catch (e) {

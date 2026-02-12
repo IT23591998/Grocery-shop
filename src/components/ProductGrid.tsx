@@ -4,14 +4,12 @@ import AddToCartButton from './AddToCartButton';
 
 import { Product } from '@/types';
 
-import { PRODUCTS } from '@/data/products';
-
 async function getProducts() {
     const supabase = await createClient();
-    // Return demo data immediately since we are in demo mode or if client setup failed
+
+    // If client setup failed, return empty array
     if (!supabase) {
-        console.log("Demo Mode: Serving static data");
-        return PRODUCTS;
+        return [];
     }
 
     try {
@@ -22,12 +20,12 @@ async function getProducts() {
 
         if (error) {
             console.error("Error fetching products:", error);
-            return PRODUCTS; // Fallback to demo data on error
+            return [];
         }
         return data as Product[];
     } catch (e) {
         console.error("Unexpected error:", e);
-        return PRODUCTS;
+        return [];
     }
 }
 

@@ -4,13 +4,9 @@ import ProductGrid from '@/components/ProductGrid'; // We might need to refactor
 import Link from 'next/link';
 import AddToCartButton from '@/components/AddToCartButton';
 
-import { PRODUCTS } from '@/data/products';
-
 async function getCategoryProducts(categoryId: number) {
     const supabase = await createClient();
-    if (!supabase) {
-        return PRODUCTS.filter(p => p.category_id === categoryId);
-    }
+    if (!supabase) return [];
 
     try {
         const { data, error } = await supabase
@@ -19,32 +15,16 @@ async function getCategoryProducts(categoryId: number) {
             .eq('category_id', categoryId);
 
         if (error) throw error;
-
-        // If DB returns nothing, check if we should show demo data
-        if (data.length === 0) {
-            return PRODUCTS.filter(p => p.category_id === categoryId);
-        }
-
         return data as Product[];
     } catch (e) {
         console.error("Error fetching products:", e);
-        return PRODUCTS.filter(p => p.category_id === categoryId);
+        return [];
     }
 }
 
 async function getCategoryName(categoryId: number) {
     const supabase = await createClient();
-    // Simple lookup for demo purposes or DB fetch
-    if (!supabase) {
-        const cats = [
-            { id: 1, name: "Fruits & Vegetables" },
-            { id: 2, name: "Dairy & Eggs" },
-            { id: 3, name: "Bakery" },
-            { id: 4, name: "Beverages" },
-            { id: 5, name: "Snacks" },
-        ];
-        return cats.find(c => c.id === categoryId)?.name || "Category";
-    }
+    if (!supabase) return "Category";
 
     const { data } = await supabase.from('categories').select('name').eq('id', categoryId).single();
     return data?.name || "Category";

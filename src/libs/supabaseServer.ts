@@ -31,6 +31,18 @@ export async function createClient() {
                     }
                 },
             },
+            // @ts-ignore
+            global: {
+                fetch: (url, options) => {
+                    return fetch(url, {
+                        ...options,
+                        // @ts-ignore
+                        duplex: 'half', // Required for some node fetch implementations with streaming
+                        // Ignore SSL errors in development
+                        ...(process.env.NODE_ENV === 'development' ? { dispatcher: new (require('undici').Agent)({ connect: { rejectUnauthorized: false } }) } : {})
+                    })
+                }
+            }
         }
     )
 }

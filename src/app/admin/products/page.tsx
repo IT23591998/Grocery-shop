@@ -1,7 +1,7 @@
 import { createClient } from '@/libs/supabaseServer';
-import { Product } from '@/types';
 import Link from 'next/link';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import ProductActions from '@/components/admin/ProductActions';
 
 export const revalidate = 0; // Ensure fresh data on every request
 
@@ -67,12 +67,7 @@ export default async function AdminProductsPage() {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <div className="flex items-center justify-end space-x-2">
-                                            <Link href={`/admin/products/${product.id}`} className="text-blue-600 hover:text-blue-900 dark:text-blue-500 dark:hover:underline">
-                                                <Edit className="w-4 h-4" />
-                                            </Link>
-                                            {/* Delete button would go here - implemented as client component or form action */}
-                                        </div>
+                                        <ProductActions productId={product.id} productName={product.name} />
                                     </td>
                                 </tr>
                             ))
