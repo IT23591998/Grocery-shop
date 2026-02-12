@@ -3,14 +3,20 @@
 import Link from 'next/link';
 import { ShoppingCart, Menu, Search } from 'lucide-react';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const router = useRouter();
+    const pathname = usePathname();
     const { cartCount } = useCart();
+
+    // Hide navbar on admin pages
+    if (pathname?.startsWith('/admin')) {
+        return null;
+    }
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
